@@ -1,21 +1,37 @@
 import uniqid from "uniqid";
-export default function Question({ id, ques, opts, setAnswer, answer }) {
-  console.log(opts);
+export default function Question({
+  ques,
+  ans,
+  opts,
+  position,
+  handleChange,
+  answer,
+  isSubmit,
+}) {
+  function getClassName(opt) {
+    // console.log(opt, answer, answer === opt, isSubmit);
+    if (isSubmit) {
+      if (answer === opt && answer === ans) return "right-butt ques-butt";
+      if (answer === opt && answer !== ans) return "wrong-butt ques-butt";
+      else return "results-butt";
+    } else {
+      if (answer === opt) return "ques-butt click-butt";
+      else return "ques-butt";
+    }
+  }
+
   const optionsElem = opts.map((opt, index) => (
     <div key={uniqid()}>
       <input
         type="radio"
-        name={id}
-        id={`ans${index}`}
+        name={`ans${position}`}
+        id={opt + position}
         value={opt}
-        className="checkbox"
+        className="radio"
         checked={answer === opt}
-        onChange={() => setAnswer(opt)}
+        onChange={(event) => handleChange(event, position)}
       />
-      <label
-        htmlFor={`ans${index}`}
-        className={answer === opt ? "ques-butt click-butt" : "ques-butt"}
-      >
+      <label htmlFor={opt + position} className={getClassName(opt)}>
         {opt}
       </label>
     </div>
