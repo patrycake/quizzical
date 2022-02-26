@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Question from "./Question";
-import test from "../questions";
 import uniqid from "uniqid";
+import { unescape } from "underscore";
 
 export default function Quiz() {
   const [questions, setQuestions] = useState([]);
@@ -22,23 +22,12 @@ export default function Quiz() {
     }
     return array;
   }
-  //   useEffect(
-  //     () =>
-  //       setQuestions((prev) =>
-  //         prev.map((elm) => ({
-  //           ...elm,
-  //           incorrect_answers: add(elm.incorrect_answers, elm.correct_answer),
-  //           id: uniqid(),
-  //         }))
-  //       ),
-  //     []
-  //   );
+
   useEffect(() => {
     if (!isSubmit) {
       fetch("https://opentdb.com/api.php?amount=5")
         .then((res) => res.json())
         .then((data) => {
-          // console.log(data.results);
           setQuestions(
             data.results.map((elm) => ({
               ...elm,
@@ -58,6 +47,7 @@ export default function Quiz() {
       return [...prev];
     });
   }
+
   function countCorrect() {
     let num = answers.reduce((prev, item, index) => {
       return JSON.parse(item) === questions[index].correct_answer
@@ -68,14 +58,19 @@ export default function Quiz() {
   }
 
   const quesElem = questions.map((que, index) => {
+    // console.log(que.question);
+    // console.log(_.unescape(que.question));
+    // console.log(_.unescape(que.question));
     return (
       <Question
         key={uniqid()}
         id={que.id}
         position={index}
-        ques={JSON.stringify(que.question)}
-        ans={JSON.stringify(que.correct_answer)}
-        opts={que.incorrect_answers.map((item) => JSON.stringify(item))}
+        ques={unescape(que.question)}
+        ans={unescape(que.correct_answer.toString())}
+        opts={que.incorrect_answers.map((item) =>
+          unescape(JSON.stringify(item))
+        )}
         handleChange={handleOneAnswerChange}
         answer={answers[index]}
         isSubmit={isSubmit}
@@ -85,17 +80,13 @@ export default function Quiz() {
 
   function handleSubmit(event) {
     event.preventDefault();
-    console.log("submit");
-    console.log(isSubmit);
 
     if (isSubmit) {
       //play again
-      console.log("playagain");
       setIsSubmit(false);
       setSubmitText("");
       setAnswers(new Array(5).fill("-"));
       setQuestions([]);
-      //   setIsPlayAgain(true);
     }
     if (!answers.every((ans) => ans !== "-")) {
       setSubmitText("Must answer all the questions to move on");
