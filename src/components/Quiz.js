@@ -13,6 +13,12 @@ export default function Quiz() {
     array.push(item);
     return array;
   }
+  function decodeHtml(html) {
+    let areaElement = document.createElement("textarea");
+    areaElement.innerHTML = html;
+    return areaElement.value;
+  }
+
   function shuffleArray(array) {
     for (var i = array.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
@@ -58,18 +64,15 @@ export default function Quiz() {
   }
 
   const quesElem = questions.map((que, index) => {
-    // console.log(que.question);
-    // console.log(_.unescape(que.question));
-    // console.log(_.unescape(que.question));
     return (
       <Question
         key={uniqid()}
         id={que.id}
         position={index}
-        ques={unescape(que.question)}
-        ans={unescape(que.correct_answer.toString())}
+        ques={decodeHtml(que.question)}
+        ans={decodeHtml(que.correct_answer.toString())}
         opts={que.incorrect_answers.map((item) =>
-          unescape(JSON.stringify(item))
+          decodeHtml(JSON.stringify(item))
         )}
         handleChange={handleOneAnswerChange}
         answer={answers[index]}
